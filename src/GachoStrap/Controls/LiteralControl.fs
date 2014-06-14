@@ -2,12 +2,9 @@
 
 open System.Web.UI
 
-type LiteralControl() =
+type LiteralControl(text: string) =
     inherit Control()
-    let mutable text: string = null 
-    member this.Text 
-        with public get() = text
-        and public set value = text <- value
-    override this.Render(writer : HtmlTextWriter) =
+    member val Text = text with get, set 
+    override this.Render(writer) =
         writer.Write(this.Text)
             
