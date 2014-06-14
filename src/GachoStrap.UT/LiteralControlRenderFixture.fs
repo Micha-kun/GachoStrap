@@ -3,6 +3,7 @@
 open NUnit.Framework
 open System.IO
 open System.Web.UI
+open GachoStrap.UT.ControlHelpers
 
 [<TestFixture>]
 type LiteralControlRenderFixture() =
@@ -24,5 +25,9 @@ type LiteralControlRenderFixture() =
         ctrl.RenderControl(htw)
         let text = sw.ToString()
         Assert.That(text, Is.EqualTo("<p>Hola"))
+    [<TestCase>]
+    member x.RenderLiteralControl3() =
+        let ctrl = new GachoStrap.Controls.LiteralControl("<p>Hola")
+        Assert.That(ctrl.ToHtmlString(), Is.EqualTo("<p>Hola"))
             
         
