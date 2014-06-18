@@ -3,7 +3,6 @@
 open NUnit.Framework
 open System.IO
 open System.Web.UI
-open GachoStrap.UT.ControlHelpers
 
 [<TestFixture>]
 type LiteralControlRenderFixture() =

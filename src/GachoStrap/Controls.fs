@@ -7,4 +7,3 @@ type LiteralControl(text: string) =
     member val Text = text with get, set 
     override this.Render(writer) =
         writer.Write(this.Text)
-            
