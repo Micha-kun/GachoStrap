@@ -37,3 +37,15 @@ type HiddenField() =
     override this.Render writer =
         writer.Write "HiddenField"
         base.Render writer
+
+type Image() =
+    inherit Control()
+    override this.Render writer =
+        writer.Write "Image"
+        base.Render writer
+
+type Video() =
+    inherit Control()
+    override this.Render writer =
+        writer.Write "Video"
+        base.Render writer
