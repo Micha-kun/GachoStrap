@@ -1,12 +1,26 @@
 ﻿namespace GachoStrap.Controls
 
+open System
 open System.Web.UI
+
+type TextChangedEventArgs(oldValue, newValue) =
+    inherit EventArgs()
+    member this.OldValue = oldValue
+    member this.NewValue = newValue
 
 type TextBox() =
     inherit Control()
+    let textChanged = new Event<EventHandler<TextChangedEventArgs>, TextChangedEventArgs>()
+
+    [<CLIEvent>]
+    member this.TextChanged = textChanged.Publish
+
     member this.Text 
         with get () = this.ViewState.["Text"] :?> string
-        and set (value : string) = this.ViewState.["Text"] <- value
+        and set (value : string) = 
+            let oldValue = this.Text
+            this.ViewState.["Text"] <- value
+            textChanged.Trigger (this, new TextChangedEventArgs(oldValue, value))
     override this.Render writer =
         writer.Write "TextBox"
         base.Render writer
