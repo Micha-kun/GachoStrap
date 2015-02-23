@@ -3,7 +3,10 @@
 open System.Web.UI
 
 type TextBox() =
-    inherit Control() 
+    inherit Control()
+    member this.Text 
+        with get () = this.ViewState.["Text"] :?> string
+        and set (value : string) = this.ViewState.["Text"] <- value
     override this.Render writer =
         writer.Write "TextBox"
         base.Render writer
