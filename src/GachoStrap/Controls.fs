@@ -22,7 +22,7 @@ type TextBox() =
             this.ViewState.["Text"] <- value
             textChanged.Trigger (this, new TextChangedEventArgs(oldValue, value))
     override this.Render writer =
-        writer.Write "TextBox"
+        writer.Write (@"<input type=""text"" value=""" + this.Text + @""" />")
         base.Render writer
 
 type Button() =
