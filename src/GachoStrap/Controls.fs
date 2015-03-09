@@ -1,7 +1,22 @@
 ﻿namespace GachoStrap.Controls
 
 open System
+open System.ComponentModel
 open System.Web.UI
+
+type private Event<'a when 'a :> EventArgs>(ehl : EventHandlerList, key)  =
+    member this.Publish = 
+        { new IDelegateEvent<EventHandler<'a>> with
+              member x.AddHandler(handler) = 
+                  ehl.AddHandler (key, handler)
+              
+              member x.RemoveHandler(handler) = 
+                  ehl.RemoveHandler (key, handler) }
+
+    member this.Trigger (sender, args) =
+         match ehl.[key] with
+            | :? EventHandler<'a> as hdl -> hdl.Invoke(this, args)
+            | _ -> ignore()
 
 type TextChangedEventArgs(oldValue, newValue) =
     inherit EventArgs()
@@ -10,33 +25,18 @@ type TextChangedEventArgs(oldValue, newValue) =
 
 type TextBox() =
     inherit Control()
-
     static let textChangedKey = new obj();
-
-    member private this.textChangedAddHandler hdl = base.Events.AddHandler (textChangedKey, hdl)
-    member private this.textChangedRemoveHandler hdl = base.Events.RemoveHandler (textChangedKey, hdl)
-
-    member private this.OnTextChanged args = 
-        match base.Events.[textChangedKey] with
-            | :? EventHandler<TextChangedEventArgs> as hdl -> hdl.Invoke(this, args)
-            | _ -> ignore()
+    member private this.TextChangedEvent = new Event<TextChangedEventArgs>(base.Events, textChangedKey) 
 
     [<CLIEvent>]
-    member this.TextChanged = 
-        { new IDelegateEvent<EventHandler<TextChangedEventArgs>> with
-              member x.AddHandler(handler) = 
-                  this.textChangedAddHandler handler
-              
-              member x.RemoveHandler(handler) = 
-                  this.textChangedRemoveHandler handler }
-
+    member this.TextChanged = this.TextChangedEvent.Publish
 
     member this.Text 
         with get () = this.ViewState.["Text"] :?> string
         and set (value : string) = 
             let oldValue = this.Text
             this.ViewState.["Text"] <- value
-            this.OnTextChanged (new TextChangedEventArgs(oldValue, value))
+            this.TextChangedEvent.Trigger (this, new TextChangedEventArgs(oldValue, value))
 
     override this.Render writer =
         writer.Write (@"<input type=""text"" value=""" + this.Text + @""" />")
