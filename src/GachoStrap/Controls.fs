@@ -4,7 +4,7 @@ open System
 open System.ComponentModel
 open System.Web.UI
 
-type private Event<'a when 'a :> EventArgs>(ehl : EventHandlerList, key)  =
+type private ControlEvent<'a when 'a :> EventArgs>(ehl : EventHandlerList, key)  =
     member this.Publish = 
         { new IDelegateEvent<EventHandler<'a>> with
               member x.AddHandler(handler) = 
@@ -26,7 +26,7 @@ type TextChangedEventArgs(oldValue, newValue) =
 type TextBox() =
     inherit Control()
     static let textChangedKey = new obj();
-    member private this.TextChangedEvent = new Event<TextChangedEventArgs>(base.Events, textChangedKey) 
+    member private this.TextChangedEvent = new ControlEvent<TextChangedEventArgs>(base.Events, textChangedKey) 
 
     [<CLIEvent>]
     member this.TextChanged = this.TextChangedEvent.Publish
